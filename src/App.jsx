@@ -1,6 +1,16 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import { Plus, ClipboardList, Scan, Code2, Database, Globe2, Github } from "lucide-react";
+import {
+  Plus,
+  ClipboardList,
+  Scan,
+  Code2,
+  Database,
+  Globe2,
+  Github,
+  Menu,
+  X,
+} from "lucide-react";
 import { supabase } from "./lib/supabaseClient";
 import AssetStatusBadge from "./components/AssetStatusBadge";
 import AssetsByCategoryChart from "./components/AssetsByCategoryChart";
@@ -133,39 +143,71 @@ function App() {
 
       {/* CONTENIDO PRINCIPAL */}
       <div className="flex-1 flex flex-col">
-        {/* HEADER SUPERIOR */}
-        <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-          <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between gap-4">
-            {/* En móvil mostramos logo + título porque no hay sidebar */}
-            <div className="flex items-center gap-3 md:hidden">
-              <div className="h-8 w-8 rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-slate-950 font-bold text-sm">
-                CA
+                {/* HEADER SUPERIOR */}
+          <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
+          <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 space-y-3">
+            {/* Primera fila: logo + texto + chips demo */}
+            <div className="flex items-center justify-between gap-4">
+              {/* En móvil mostramos logo + título porque no hay sidebar */}
+              <div className="flex items-center gap-3 md:hidden">
+                <div className="h-8 w-8 rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-slate-950 font-bold text-sm">
+                  CA
+                </div>
+                <div>
+                  <p className="text-sm font-semibold">Canary Assets</p>
+                  <p className="text-[10px] text-slate-500">
+                    Inventario demo · React + Supabase
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-semibold">Canary Assets</p>
-                <p className="text-[10px] text-slate-500">
-                  Inventario demo · React + Supabase
+
+              <div className="hidden md:block">
+                <p className="text-xs text-slate-400">
+                  Panel principal · Gestión de activos informáticos
                 </p>
               </div>
+
+              <div className="flex items-center gap-3 ml-auto">
+                <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-400/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5" />
+                  Demo pública · Solo lectura
+                </span>
+                <span className="text-[11px] text-slate-500 hidden sm:block">
+                  Diseñada como ejemplo de portfolio
+                </span>
+              </div>
             </div>
 
-            <div className="hidden md:block">
-              <p className="text-xs text-slate-400">
-                Panel principal · Gestión de activos informáticos
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3 ml-auto">
-              <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-400/40">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5" />
-                Demo pública · Solo lectura
-              </span>
-              <span className="text-[11px] text-slate-500 hidden sm:block">
-                Diseñada como ejemplo de portfolio
-              </span>
+            {/* Segunda fila: menú móvil */}
+            <div className="flex gap-2 md:hidden text-xs">
+              <button
+                type="button"
+                className="px-3 py-1.5 rounded-full bg-emerald-500 text-slate-950 font-medium border border-emerald-400 shadow shadow-emerald-500/40"
+              >
+                Inicio
+              </button>
+              <button
+                type="button"
+                onClick={scrollToInventory}
+                className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-slate-200 hover:border-emerald-400 hover:text-emerald-200 transition"
+              >
+                Activos
+              </button>
+              <button
+                type="button"
+                onClick={() =>
+                  alert(
+                    "Demo: en una versión completa aquí verías el módulo de mantenimiento."
+                  )
+                }
+                className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-100 transition"
+              >
+                Mantenimiento
+              </button>
             </div>
           </div>
         </header>
+
 
         {/* MAIN DASHBOARD */}
         <main className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 py-6 md:py-8 space-y-6">
