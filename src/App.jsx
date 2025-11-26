@@ -1,16 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from "react";
 import { Link } from "react-router-dom";
-import {
-  Plus,
-  ClipboardList,
-  Scan,
-  Code2,
-  Database,
-  Globe2,
-  Github,
-  Menu,
-  X,
-} from "lucide-react";
+import { Plus, ClipboardList, Scan, Code2, Database, Globe2, Github } from "lucide-react";
 import { supabase } from "./lib/supabaseClient";
 import AssetStatusBadge from "./components/AssetStatusBadge";
 import AssetsByCategoryChart from "./components/AssetsByCategoryChart";
@@ -28,7 +18,6 @@ function App() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Ref para hacer scroll a la sección de inventario
   const inventoryRef = useRef(null);
 
   const scrollToInventory = () => {
@@ -93,8 +82,8 @@ function App() {
   }, [assets]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex overflow-x-hidden">
-      {/* SIDEBAR */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex">
+      {/* SIDEBAR (desktop) */}
       <aside className="hidden md:flex w-72 flex-col border-r border-slate-800 bg-slate-950/95 backdrop-blur">
         {/* Logo + título */}
         <div className="px-5 py-4 flex items-center gap-3 border-b border-slate-800/80">
@@ -143,8 +132,8 @@ function App() {
 
       {/* CONTENIDO PRINCIPAL */}
       <div className="flex-1 flex flex-col min-w-0">
-                {/* HEADER SUPERIOR */}
-          <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
+        {/* HEADER SUPERIOR */}
+        <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
           <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 space-y-3">
             {/* Primera fila: logo + texto + chips demo */}
             <div className="flex items-center justify-between gap-4">
@@ -208,13 +197,12 @@ function App() {
           </div>
         </header>
 
-
         {/* MAIN DASHBOARD */}
         <main className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 py-6 md:py-8 space-y-6">
           {/* Bloque superior con descripción + métricas */}
           <section className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,2fr)]">
             {/* Intro */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40">
+            <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40">
               <h2 className="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
                 <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-[11px]">
                   i
@@ -229,7 +217,7 @@ function App() {
                 <span className="font-semibold text-slate-100">React</span> y{" "}
                 <span className="font-semibold text-slate-100">Tailwind</span>.
               </p>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-xs text-slate-500">
                 Ideal para mostrar flujos de lectura, filtrado, visualización de
                 datos y diseño UI de dashboards modernos.
               </p>
@@ -296,7 +284,7 @@ function App() {
           {/* Panel principal: filtros + tabla */}
           <section
             ref={inventoryRef}
-            className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-2xl shadow-black/40 space-y-4"
+            className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-2xl shadow-black/40 space-y-4"
           >
             {/* Filtros */}
             <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 justify-between">
@@ -304,9 +292,9 @@ function App() {
                 <h2 className="text-sm font-semibold text-slate-100">
                   Inventario de activos
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500">
                   Vista de solo lectura desde la vista{" "}
-                  <code className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-[12px] font-mono">
+                  <code className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-[11px] font-mono">
                     assets_public
                   </code>
                   .
@@ -346,92 +334,96 @@ function App() {
                 </div>
               </div>
             </div>
-          {/* Tabla */}
-          {loading ? (
-            <div className="py-10 text-center text-slate-400 text-sm">
-              Cargando inventario demo...
-            </div>
-          ) : filteredAssets.length === 0 ? (
-            <div className="py-10 text-center text-slate-500 text-sm">
-              No hay activos que coincidan con los filtros actuales.
-            </div>
-          ) : (
-            <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/40">
-              <div className="overflow-x-auto">
-                <table className="min-w-[640px] w-full text-xs md:text-sm">
-                  <thead className="bg-slate-900/90 border-b border-slate-800 text-[11px] uppercase text-slate-400">
-                    <tr>
-                      <th className="px-3 py-2 text-left font-medium">Código</th>
-                      <th className="px-3 py-2 text-left font-medium">Nombre</th>
-                      <th className="px-3 py-2 text-left font-medium">Categoría</th>
-                      <th className="px-3 py-2 text-left font-medium">Estado</th>
-                      <th className="px-3 py-2 text-left font-medium">Ubicación</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredAssets.map((asset, idx) => (
-                      <tr
-                        key={asset.id}
-                        className={`border-b border-slate-800/80 last:border-0 hover:bg-slate-900/70 transition ${
-                          idx % 2 === 0 ? "bg-slate-950/10" : ""
-                        }`}
-                      >
-                        <td className="px-3 py-2 font-mono text-[11px] text-slate-400">
-                          {asset.code}
-                        </td>
-                        <td className="px-3 py-2">
-                          <div className="flex flex-col">
-                            <Link
-                              to={`/activo/${asset.id}`}
-                              className="font-medium text-slate-50 hover:underline decoration-emerald-400"
-                            >
-                              {asset.name}
-                            </Link>
-                            {asset.description && (
-                              <span className="text-[11px] text-slate-400 line-clamp-1">
-                                {asset.description}
-                              </span>
-                            )}
-                          </div>
-                        </td>
-                        <td className="px-3 py-2 text-slate-200">
-                          {asset.category || "—"}
-                        </td>
-                        <td className="px-3 py-2">
-                          <AssetStatusBadge status={asset.status} />
-                        </td>
-                        <td className="px-3 py-2 text-slate-200">
-                          {asset.location || "—"}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+
+            {/* Tabla */}
+            {loading ? (
+              <div className="py-10 text-center text-slate-400 text-sm">
+                Cargando inventario demo...
               </div>
-            </div>
-          )}
-          <p className="text-[15px] text-slate-400">
-            * Esta demo está pensada para mostrar diseño de dashboards y
-            conexión con una base de datos real. En una versión completa se
-            añadirían roles, edición de activos, escáner QR, etc.
-          </p>
+            ) : filteredAssets.length === 0 ? (
+              <div className="py-10 text-center text-slate-500 text-sm">
+                No hay activos que coincidan con los filtros actuales.
+              </div>
+            ) : (
+              <div className="rounded-xl border-[2px] border-slate-700/60 overflow-hidden bg-slate-950/40">
+                <div className="overflow-x-auto">
+                  <table className="min-w-[640px] w-full text-xs md:text-sm">
+                    <thead className="bg-slate-900/90 border-b border-slate-800 text-[11px] uppercase text-slate-400">
+                      <tr>
+                        <th className="px-3 py-2 text-left font-medium">
+                          Código
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium">
+                          Nombre
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium">
+                          Categoría
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium">
+                          Estado
+                        </th>
+                        <th className="px-3 py-2 text-left font-medium">
+                          Ubicación
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredAssets.map((asset, idx) => (
+                        <tr
+                          key={asset.id}
+                          className={`border-b border-slate-800/80 last:border-0 hover:bg-slate-900/70 transition ${
+                            idx % 2 === 0 ? "bg-slate-950/10" : ""
+                          }`}
+                        >
+                          <td className="px-3 py-2 font-mono text-[11px] text-slate-400">
+                            {asset.code}
+                          </td>
+                          <td className="px-3 py-2">
+                            <div className="flex flex-col">
+                              <Link
+                                to={`/activo/${asset.id}`}
+                                className="font-medium text-slate-50 hover:underline decoration-emerald-400"
+                              >
+                                {asset.name}
+                              </Link>
+                              {asset.description && (
+                                <span className="text-[11px] text-slate-400 line-clamp-1">
+                                  {asset.description}
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-3 py-2 text-slate-200">
+                            {asset.category || "—"}
+                          </td>
+                          <td className="px-3 py-2">
+                            <AssetStatusBadge status={asset.status} />
+                          </td>
+                          <td className="px-3 py-2 text-slate-200">
+                            {asset.location || "—"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
-
-            <p className="text-[15px] text-slate-400">
+            <p className="text-xs text-slate-400">
               * Esta demo está pensada para mostrar diseño de dashboards y
               conexión con una base de datos real. En una versión completa se
               añadirían roles, edición de activos, escáner QR, etc.
             </p>
           </section>
 
-           {/* GRÁFICA */}
-            <section className="overflow-x-auto">
-              <div className="min-w-[260px]">
-                <AssetsByCategoryChart assets={assets} />
-              </div>
-            </section>
+          {/* GRÁFICA */}
+          <section>
+            <AssetsByCategoryChart assets={assets} />
+          </section>
+
           {/* ACERCA DE ESTA DEMO / STACK TÉCNICO */}
-          <section className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40 grid gap-4 md:grid-cols-[2fr_1.2fr]">
+          <section className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40 grid gap-4 md:grid-cols-[2fr_1.2fr]">
             {/* Descripción */}
             <div className="space-y-3">
               <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
@@ -439,15 +431,19 @@ function App() {
                 Acerca de esta demo
               </h2>
               <p className="text-sm text-slate-300 leading-relaxed">
-                <span className="font-semibold text-slate-50">Canary Assets</span> es
-                una demo pública de un sistema de inventario de activos informáticos.
-                Está pensada para mostrar tu capacidad para diseñar e implementar
-                dashboards modernos conectados a una base de datos en la nube.
+                <span className="font-semibold text-slate-50">
+                  Canary Assets
+                </span>{" "}
+                es una demo pública de un sistema de inventario de activos
+                informáticos. Está pensada para mostrar tu capacidad para
+                diseñar e implementar dashboards modernos conectados a una base
+                de datos en la nube.
               </p>
-              <p className="text-[11px] text-slate-500">
-                Esta versión es de solo lectura: los datos se cargan desde una vista
-                pública de Supabase y se presentan en diferentes componentes visuales
-                (métricas, tabla, gráficas, ficha de detalle, etc.).
+              <p className="text-xs text-slate-500">
+                Esta versión es de solo lectura: los datos se cargan desde una
+                vista pública de Supabase y se presentan en diferentes
+                componentes visuales (métricas, tabla, gráficas, ficha de
+                detalle, etc.).
               </p>
             </div>
 
@@ -463,7 +459,10 @@ function App() {
                 </li>
                 <li className="flex items-center gap-2">
                   <Database className="w-3.5 h-3.5 text-emerald-300" />
-                  <span>Datos en Supabase (vista pública <code>assets_public</code>).</span>
+                  <span>
+                    Datos en Supabase (vista pública{" "}
+                    <code>assets_public</code>).
+                  </span>
                 </li>
                 <li className="flex items-center gap-2">
                   <Globe2 className="w-3.5 h-3.5 text-emerald-300" />
@@ -473,8 +472,9 @@ function App() {
 
               <div className="pt-2 border-t border-slate-800 space-y-2">
                 <p className="text-[11px] text-slate-500">
-                  Este proyecto puede utilizarse como ejemplo en tu portfolio para
-                  mostrar proyectos de gestión interna (inventarios, reservas, etc.).
+                  Este proyecto puede utilizarse como ejemplo en tu portfolio
+                  para mostrar proyectos de gestión interna (inventarios,
+                  reservas, etc.).
                 </p>
                 <div className="flex flex-wrap gap-2 text-[11px]">
                   <a
@@ -485,13 +485,10 @@ function App() {
                     Ver código (GitHub)
                   </a>
                   <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-slate-800 bg-slate-950/60 text-slate-400">
-                    Demo construida por: {" "}
+                    Demo construida por{" "}
                     <span className="font-medium text-slate-200 ml-1">
-                      <p>Richard Díaz Jiménez</p>
-                      <a href="mailto:richard.diaz.jimenez@outlook.com " target="_blank" rel="noopener noreferrer">
-                        <p>(richard.diaz.jimenez@outlook.com)</p>
-                      </a>
-                    </span>   
+                      Richard Díaz
+                    </span>
                   </span>
                 </div>
               </div>
@@ -501,6 +498,7 @@ function App() {
       </div>
     </div>
   );
+}
 
 function SidebarSection({ title, children }) {
   return (
@@ -548,7 +546,7 @@ function StatCard({ label, value, hint, accent }) {
       : "from-slate-400/25 to-slate-500/15 text-slate-200";
 
   return (
-    <div className="bg-slate-900/70 border border-slate-800 rounded-2xl p-3.5 flex flex-col justify-between shadow-lg shadow-black/40">
+    <div className="bg-slate-900/70 border-[3px] border-slate-700/60 rounded-2xl p-3.5 flex flex-col justify-between shadow-lg shadow-black/40">
       <p className="text-[11px] font-medium text-slate-400 uppercase mb-1">
         {label}
       </p>
@@ -569,7 +567,7 @@ function QuickActionCard({ title, description, icon: Icon, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className="group text-left bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex gap-3 items-start hover:border-emerald-400/80 hover:bg-slate-900 shadow-lg shadow-black/30 hover:shadow-emerald-500/20 transition"
+      className="group text-left bg-slate-900/80 border-[2px] border-slate-700/60 rounded-2xl p-4 flex gap-3 items-start hover:border-emerald-400/80 hover:bg-slate-900 shadow-lg shadow-black/30 hover:shadow-emerald-500/20 transition"
     >
       {Icon && (
         <div className="mt-0.5 h-8 w-8 rounded-xl bg-slate-950/80 border border-slate-700 flex items-center justify-center">
@@ -588,5 +586,5 @@ function QuickActionCard({ title, description, icon: Icon, onClick }) {
     </button>
   );
 }
-}
+
 export default App;
