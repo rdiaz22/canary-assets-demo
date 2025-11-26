@@ -82,3 +82,9 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50 text-[20px];
+  }
+}

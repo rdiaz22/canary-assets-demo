@@ -93,7 +93,7 @@ function App() {
   }, [assets]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex overflow-x-hidden">
       {/* SIDEBAR */}
       <aside className="hidden md:flex w-72 flex-col border-r border-slate-800 bg-slate-950/95 backdrop-blur">
         {/* Logo + título */}
@@ -304,9 +304,9 @@ function App() {
                 <h2 className="text-sm font-semibold text-slate-100">
                   Inventario de activos
                 </h2>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs text-slate-400">
                   Vista de solo lectura desde la vista{" "}
-                  <code className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-[10px]">
+                  <code className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-[12px] font-mono">
                     assets_public
                   </code>
                   .
@@ -420,17 +420,19 @@ function App() {
               </div>
             )}
 
-            <p className="text-[11px] text-slate-500">
+            <p className="text-[15px] text-slate-400">
               * Esta demo está pensada para mostrar diseño de dashboards y
               conexión con una base de datos real. En una versión completa se
               añadirían roles, edición de activos, escáner QR, etc.
             </p>
           </section>
 
-                   {/* GRÁFICA */}
-                   <section>
-            <AssetsByCategoryChart assets={assets} />
-          </section>
+          {/* GRÁFICA */}
+            <section className="overflow-x-auto">
+              <div className="min-w-[280px]">
+                <AssetsByCategoryChart assets={assets} />
+              </div>
+            </section>
 
           {/* ACERCA DE ESTA DEMO / STACK TÉCNICO */}
           <section className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40 grid gap-4 md:grid-cols-[2fr_1.2fr]">
