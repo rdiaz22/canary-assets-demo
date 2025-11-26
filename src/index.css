@@ -38,12 +38,11 @@ a:hover {
 }
 
 body {
-  background-color: #242424;  
+  background-color: #242424;
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 h1 {
@@ -85,6 +84,6 @@ button:focus-visible {
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-50 text-[20px];
+    @apply bg-slate-950 text-slate-50 text-[20px] overflow-x-hidden;
   }
 }
