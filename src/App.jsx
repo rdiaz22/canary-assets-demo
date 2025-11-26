@@ -142,7 +142,7 @@ function App() {
       </aside>
 
       {/* CONTENIDO PRINCIPAL */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col min-w-0">
                 {/* HEADER SUPERIOR */}
           <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
           <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 space-y-3">
@@ -346,36 +346,26 @@ function App() {
                 </div>
               </div>
             </div>
-
-            {/* Tabla */}
-            {loading ? (
-              <div className="py-10 text-center text-slate-400 text-sm">
-                Cargando inventario demo...
-              </div>
-            ) : filteredAssets.length === 0 ? (
-              <div className="py-10 text-center text-slate-500 text-sm">
-                No hay activos que coincidan con los filtros actuales.
-              </div>
-            ) : (
-              <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/40">
-                <table className="min-w-full text-xs md:text-sm">
+          {/* Tabla */}
+          {loading ? (
+            <div className="py-10 text-center text-slate-400 text-sm">
+              Cargando inventario demo...
+            </div>
+          ) : filteredAssets.length === 0 ? (
+            <div className="py-10 text-center text-slate-500 text-sm">
+              No hay activos que coincidan con los filtros actuales.
+            </div>
+          ) : (
+            <div className="rounded-xl border border-slate-800 overflow-hidden bg-slate-950/40">
+              <div className="overflow-x-auto">
+                <table className="min-w-[640px] w-full text-xs md:text-sm">
                   <thead className="bg-slate-900/90 border-b border-slate-800 text-[11px] uppercase text-slate-400">
                     <tr>
-                      <th className="px-3 py-2 text-left font-medium">
-                        Código
-                      </th>
-                      <th className="px-3 py-2 text-left font-medium">
-                        Nombre
-                      </th>
-                      <th className="px-3 py-2 text-left font-medium">
-                        Categoría
-                      </th>
-                      <th className="px-3 py-2 text-left font-medium">
-                        Estado
-                      </th>
-                      <th className="px-3 py-2 text-left font-medium">
-                        Ubicación
-                      </th>
+                      <th className="px-3 py-2 text-left font-medium">Código</th>
+                      <th className="px-3 py-2 text-left font-medium">Nombre</th>
+                      <th className="px-3 py-2 text-left font-medium">Categoría</th>
+                      <th className="px-3 py-2 text-left font-medium">Estado</th>
+                      <th className="px-3 py-2 text-left font-medium">Ubicación</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -418,7 +408,14 @@ function App() {
                   </tbody>
                 </table>
               </div>
-            )}
+            </div>
+          )}
+          <p className="text-[15px] text-slate-400">
+            * Esta demo está pensada para mostrar diseño de dashboards y
+            conexión con una base de datos real. En una versión completa se
+            añadirían roles, edición de activos, escáner QR, etc.
+          </p>
+
 
             <p className="text-[15px] text-slate-400">
               * Esta demo está pensada para mostrar diseño de dashboards y
@@ -427,13 +424,12 @@ function App() {
             </p>
           </section>
 
-          {/* GRÁFICA */}
+           {/* GRÁFICA */}
             <section className="overflow-x-auto">
-              <div className="min-w-[280px]">
+              <div className="min-w-[260px]">
                 <AssetsByCategoryChart assets={assets} />
               </div>
             </section>
-
           {/* ACERCA DE ESTA DEMO / STACK TÉCNICO */}
           <section className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40 grid gap-4 md:grid-cols-[2fr_1.2fr]">
             {/* Descripción */}

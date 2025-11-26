@@ -42,7 +42,6 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  overflow-x: hidden;
 }
 
 h1 {
@@ -84,6 +83,6 @@ button:focus-visible {
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-50 text-[20px] overflow-x-hidden;
+    @apply bg-slate-950 text-slate-50 text-[20px];
   }
 }
