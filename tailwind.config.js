@@ -5,8 +5,14 @@ export default {
     "./src/**/*.{js,jsx,ts,tsx}",
   ],
   theme: {
-    extend: {},
-  },
-  plugins: [],
-};
+    extend: {
+             fontSize: {
+              base: "22px",      // aumenta todo en proporción
+              sm: "17px",
+              xs: "14px", // añade esto 
+            },
+          },
+        },
+        plugins: [],
+      };
 

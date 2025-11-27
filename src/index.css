@@ -42,6 +42,8 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  font-size: 20px;
+  line-height: 1.6;
 }
 
 h1 {
@@ -83,6 +85,6 @@ button:focus-visible {
 
 @layer base {
   body {
-    @apply bg-slate-950 text-slate-50 text-[20px];
+    @apply bg-slate-950 text-slate-50;
   }
 }
