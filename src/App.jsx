@@ -492,9 +492,8 @@ function App() {
 
               <div className="pt-2 border-t border-slate-800 space-y-2">
                 <p className="text-[11px] text-slate-500">
-                  Este proyecto puede utilizarse como ejemplo en tu portfolio
-                  para mostrar proyectos de gestión interna (inventarios,
-                  reservas, etc.).
+                  Este proyecto es un ejemplo que muestra como se puede conectar una base de datos en la nube a un frontend con React y Tailwind CSS.
+                  (inventario de activos, reservas, etc.).
                 </p>
                 <div className="flex flex-wrap gap-2 text-[11px]">
                   <a
