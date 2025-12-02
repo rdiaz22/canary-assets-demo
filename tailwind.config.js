@@ -6,13 +6,12 @@ export default {
   ],
   theme: {
     extend: {
-             fontSize: {
-              base: "22px",      // aumenta todo en proporción
-              sm: "17px",
-              xs: "14px", // añade esto 
-            },
-          },
-        },
-        plugins: [],
-      };
-
+      fontSize: {
+        base: "22px",      // aumenta todo en proporción
+        sm: "17px",
+        xs: "14px",
+      },
+    },
+  },
+  plugins: [],
+};

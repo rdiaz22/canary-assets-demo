@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useRef } from "react";
+import { useEffect, useState, useMemo, useRef, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { Plus, ClipboardList, Scan, Code2, Database, Globe2, Github } from "lucide-react";
 import { supabase } from "./lib/supabaseClient";
@@ -20,14 +20,46 @@ function App() {
 
   const inventoryRef = useRef(null);
 
-  const scrollToInventory = () => {
-    if (inventoryRef.current) {
-      inventoryRef.current.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }
-  };
+  const scrollToInventory = useCallback(() => {
+    // Usar requestAnimationFrame para deferir el scroll y no bloquear la UI
+    requestAnimationFrame(() => {
+      if (inventoryRef.current) {
+        inventoryRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }
+    });
+  }, []);
+
+  // Handlers optimizados que no bloquean la UI
+  const handleNewAssetClick = useCallback(() => {
+    setTimeout(() => {
+      alert(
+        "Demo: aquí iría el formulario de creación de activos en la versión completa."
+      );
+    }, 0);
+  }, []);
+
+  const handleScanClick = useCallback(() => {
+    setTimeout(() => {
+      alert(
+        "Demo: aquí se abriría el escáner de códigos de barras / QR en la app real."
+      );
+    }, 0);
+  }, []);
+
+  const handleMaintenanceClick = useCallback(() => {
+    setTimeout(() => {
+      alert(
+        "Demo: en una versión completa aquí verías el módulo de mantenimiento."
+      );
+    }, 0);
+  }, []);
+
+  const handleStatusFilterChange = useCallback((value) => {
+    setStatusFilter(value);
+  }, []);
 
   useEffect(() => {
     const loadAssets = async () => {
@@ -184,11 +216,7 @@ function App() {
               </button>
               <button
                 type="button"
-                onClick={() =>
-                  alert(
-                    "Demo: en una versión completa aquí verías el módulo de mantenimiento."
-                  )
-                }
+                onClick={handleMaintenanceClick}
                 className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-100 transition"
               >
                 Mantenimiento
@@ -257,11 +285,7 @@ function App() {
               title="Registrar nuevo activo"
               description="En una versión completa podrías crear y dar de alta nuevos equipos."
               icon={Plus}
-              onClick={() =>
-                alert(
-                  "Demo: aquí iría el formulario de creación de activos en la versión completa."
-                )
-              }
+              onClick={handleNewAssetClick}
             />
             <QuickActionCard
               title="Ver inventario"
@@ -273,11 +297,7 @@ function App() {
               title="Escanear activo (demo)"
               description="Simulación de acceso al módulo de escaneo con cámara y códigos."
               icon={Scan}
-              onClick={() =>
-                alert(
-                  "Demo: aquí se abriría el escáner de códigos de barras / QR en la app real."
-                )
-              }
+              onClick={handleScanClick}
             />
           </section>
 
@@ -320,7 +340,7 @@ function App() {
                     <button
                       key={opt.value}
                       type="button"
-                      onClick={() => setStatusFilter(opt.value)}
+                      onClick={() => handleStatusFilterChange(opt.value)}
                       className={`px-3 py-1 rounded-full text-[11px] border transition
                         ${
                           statusFilter === opt.value
