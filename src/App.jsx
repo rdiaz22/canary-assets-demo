@@ -1,22 +1,34 @@
-import { useEffect, useState, useMemo, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
-import { Plus, ClipboardList, Scan, Code2, Database, Globe2, Github } from "lucide-react";
+import { useEffect, useState, useMemo, useRef, useCallback, Suspense, lazy } from "react";
+import { useNavigate } from "react-router-dom";
+import { Code2, Database, Globe2, Github } from "lucide-react";
+import { useAuth } from "./contexts/AuthContext";
 import { supabase } from "./lib/supabaseClient";
-import AssetStatusBadge from "./components/AssetStatusBadge";
-import AssetsByCategoryChart from "./components/AssetsByCategoryChart";
+import Sidebar from "./components/Sidebar";
+import AppHeader from "./components/AppHeader";
+import StatsSection from "./components/StatsSection";
+import QuickActionsSection from "./components/QuickActionsSection";
+import InventorySection from "./components/InventorySection";
+import AssetForm from "./components/AssetForm";
+import DeleteConfirm from "./components/DeleteConfirm";
+import CommandPalette from "./components/CommandPalette";
 
-const STATUS_OPTIONS = [
-  { value: "all", label: "Todos" },
-  { value: "disponible", label: "Disponibles" },
-  { value: "prestado", label: "Prestados" },
-  { value: "averiado", label: "Averiados" },
-];
+// Lazy load del componente de gráficos para code splitting
+const AssetsByCategoryChart = lazy(() => import("./components/AssetsByCategoryChart.jsx"));
+const AssetsStatusChart = lazy(() => import("./components/AssetsStatusChart.jsx"));
+const AssetsLocationChart = lazy(() => import("./components/AssetsLocationChart.jsx"));
 
 function App() {
+  const { logout, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [assets, setAssets] = useState([]);
+  const [localAssets, setLocalAssets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [formOpen, setFormOpen] = useState(false);
+  const [editingAsset, setEditingAsset] = useState(null);
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const [commandOpen, setCommandOpen] = useState(false);
 
   const inventoryRef = useRef(null);
 
@@ -34,12 +46,41 @@ function App() {
 
   // Handlers optimizados que no bloquean la UI
   const handleNewAssetClick = useCallback(() => {
-    setTimeout(() => {
-      alert(
-        "Demo: aquí iría el formulario de creación de activos en la versión completa."
-      );
-    }, 0);
+    setEditingAsset(null);
+    setFormOpen(true);
   }, []);
+
+  const handleEditAsset = useCallback((asset) => {
+    setEditingAsset(asset);
+    setFormOpen(true);
+  }, []);
+
+  const handleDeleteAsset = useCallback((asset) => {
+    setDeleteConfirm(asset);
+  }, []);
+
+  const handleSaveAsset = useCallback((assetData) => {
+    if (editingAsset) {
+      // Actualizar activo existente
+      setLocalAssets((prev) =>
+        prev.map((a) => (a.id === assetData.id ? assetData : a))
+      );
+    } else {
+      // Crear nuevo activo
+      setLocalAssets((prev) => [...prev, assetData]);
+    }
+    setFormOpen(false);
+    setEditingAsset(null);
+  }, [editingAsset]);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (deleteConfirm) {
+      setLocalAssets((prev) =>
+        prev.filter((a) => a.id !== deleteConfirm.id)
+      );
+      setDeleteConfirm(null);
+    }
+  }, [deleteConfirm]);
 
   const handleScanClick = useCallback(() => {
     setTimeout(() => {
@@ -61,6 +102,27 @@ function App() {
     setStatusFilter(value);
   }, []);
 
+  const handleOpenCommand = useCallback(() => {
+    setCommandOpen(true);
+  }, []);
+
+  const handleCloseCommand = useCallback(() => {
+    setCommandOpen(false);
+  }, []);
+
+  const handleSelectAssetFromCommand = useCallback(
+    (asset) => {
+      if (asset.id && !String(asset.id).startsWith("local-")) {
+        navigate(`/activo/${asset.id}`);
+      } else {
+        // Para activos locales, hacemos scroll al inventario
+        scrollToInventory();
+      }
+      setCommandOpen(false);
+    },
+    [navigate, scrollToInventory]
+  );
+
   useEffect(() => {
     const loadAssets = async () => {
       setLoading(true);
@@ -80,8 +142,30 @@ function App() {
     loadAssets();
   }, []);
 
+  // Atajo de teclado global Ctrl+K / Cmd+K
+  useEffect(() => {
+    const handler = (e) => {
+      const isMac = navigator.platform.toLowerCase().includes("mac");
+      if (
+        (isMac ? e.metaKey : e.ctrlKey) &&
+        (e.key === "k" || e.key === "K")
+      ) {
+        e.preventDefault();
+        setCommandOpen((prev) => !prev);
+      }
+    };
+
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  // Combinar activos de Supabase con activos locales
+  const allAssets = useMemo(() => {
+    return [...assets, ...localAssets];
+  }, [assets, localAssets]);
+
   const filteredAssets = useMemo(() => {
-    return assets.filter((asset) => {
+    return allAssets.filter((asset) => {
       const matchesSearch =
         (asset.name +
           asset.code +
@@ -96,134 +180,62 @@ function App() {
 
       return matchesSearch && matchesStatus;
     });
-  }, [assets, search, statusFilter]);
+  }, [allAssets, search, statusFilter]);
 
   const stats = useMemo(() => {
-    const total = assets.length;
-    const disponibles = assets.filter(
+    const total = allAssets.length;
+    const disponibles = allAssets.filter(
       (a) => a.status?.toLowerCase() === "disponible"
     ).length;
-    const prestados = assets.filter(
+    const prestados = allAssets.filter(
       (a) => a.status?.toLowerCase() === "prestado"
     ).length;
-    const averiados = assets.filter(
+    const averiados = allAssets.filter(
       (a) => a.status?.toLowerCase() === "averiado"
     ).length;
 
     return { total, disponibles, prestados, averiados };
-  }, [assets]);
+  }, [allAssets]);
+
+  const handleExportCSV = useCallback(() => {
+    const headers = ["Código", "Nombre", "Categoría", "Estado", "Ubicación", "Descripción"];
+    const rows = filteredAssets.map((asset) => [
+      asset.code || "",
+      asset.name || "",
+      asset.category || "",
+      asset.status || "",
+      asset.location || "",
+      asset.description || "",
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
+    ].join("\n");
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `inventario_${new Date().toISOString().split("T")[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }, [filteredAssets]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex">
-      {/* SIDEBAR (desktop) */}
-      <aside className="hidden md:flex w-72 flex-col border-r border-slate-800 bg-slate-950/95 backdrop-blur">
-        {/* Logo + título */}
-        <div className="px-5 py-4 flex items-center gap-3 border-b border-slate-800/80">
-          <div className="h-9 w-9 rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-slate-950 font-bold text-base shadow-lg shadow-emerald-500/40">
-            CA
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-50">
-              Canary Assets
-            </p>
-            <p className="text-[11px] text-emerald-300">Inventario demo</p>
-          </div>
-        </div>
-
-        {/* Navegación */}
-        <nav className="flex-1 px-3 py-4 text-sm space-y-5">
-          <SidebarSection title="Principal">
-            <SidebarItem label="Inicio" icon="🏠" active />
-            <SidebarItem label="Activos" icon="💻" />
-          </SidebarSection>
-
-          <SidebarSection title="Operaciones">
-            <SidebarItem label="Mantenimiento" icon="🛠️" />
-            <SidebarItem label="Auditorías" icon="📋" />
-          </SidebarSection>
-
-          <SidebarSection title="Sistema">
-            <SidebarItem label="Configuración" icon="⚙️" />
-            <SidebarItem label="Escanear (demo)" icon="📱" />
-          </SidebarSection>
-        </nav>
-
-        {/* Usuario demo */}
-        <div className="px-4 py-4 border-t border-slate-800/80 text-xs flex items-center gap-3">
-          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400/70 to-sky-500/70 flex items-center justify-center text-[11px] font-semibold text-slate-950">
-            RD
-          </div>
-          <div className="flex flex-col">
-            <span className="font-medium text-slate-100">rdiaz22</span>
-            <span className="text-[10px] text-emerald-300">
-              Administrador del sistema
-            </span>
-          </div>
-        </div>
-      </aside>
+      <Sidebar onLogout={logout} />
 
       {/* CONTENIDO PRINCIPAL */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* HEADER SUPERIOR */}
-        <header className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur">
-          <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 space-y-3">
-            {/* Primera fila: logo + texto + chips demo */}
-            <div className="flex items-center justify-between gap-4">
-              {/* En móvil mostramos logo + título porque no hay sidebar */}
-              <div className="flex items-center gap-3 md:hidden">
-                <div className="h-8 w-8 rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-500 flex items-center justify-center text-slate-950 font-bold text-sm">
-                  CA
-                </div>
-                <div>
-                  <p className="text-sm font-semibold">Canary Assets</p>
-                  <p className="text-[10px] text-slate-500">
-                    Inventario demo · React + Supabase
-                  </p>
-                </div>
-              </div>
-
-              <div className="hidden md:block">
-                <p className="text-xs text-slate-400">
-                  Panel principal · Gestión de activos informáticos
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 ml-auto">
-                <span className="hidden sm:inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium bg-emerald-500/10 text-emerald-300 border border-emerald-400/40">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5" />
-                  Demo pública · Solo lectura
-                </span>
-                <span className="text-[11px] text-slate-500 hidden sm:block">
-                  Diseñada como ejemplo de portfolio
-                </span>
-              </div>
-            </div>
-
-            {/* Segunda fila: menú móvil */}
-            <div className="flex gap-2 md:hidden text-xs">
-              <button
-                type="button"
-                className="px-3 py-1.5 rounded-full bg-emerald-500 text-slate-950 font-medium border border-emerald-400 shadow shadow-emerald-500/40"
-              >
-                Inicio
-              </button>
-              <button
-                type="button"
-                onClick={scrollToInventory}
-                className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-700 text-slate-200 hover:border-emerald-400 hover:text-emerald-200 transition"
-              >
-                Activos
-              </button>
-              <button
-                type="button"
-                onClick={handleMaintenanceClick}
-                className="px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:border-slate-600 hover:text-slate-100 transition"
-              >
-                Mantenimiento
-              </button>
-            </div>
-          </div>
-        </header>
+        <AppHeader
+          onOpenCommand={handleOpenCommand}
+          onScrollToInventory={scrollToInventory}
+          onMaintenanceClick={handleMaintenanceClick}
+          isAdmin={isAdmin()}
+        />
 
         {/* MAIN DASHBOARD */}
         <main className="flex-1 max-w-6xl mx-auto w-full px-4 md:px-6 py-6 md:py-8 space-y-6">
@@ -251,195 +263,81 @@ function App() {
               </p>
             </div>
 
-            {/* Métricas */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <StatCard
-                label="Activos totales"
-                value={stats.total}
-                hint="Equipos registrados en esta demo"
-              />
-              <StatCard
-                label="Disponibles"
-                value={stats.disponibles}
-                accent="emerald"
-                hint="Listos para usar"
-              />
-              <StatCard
-                label="Prestados"
-                value={stats.prestados}
-                accent="amber"
-                hint="Asignados a usuarios"
-              />
-              <StatCard
-                label="Averiados"
-                value={stats.averiados}
-                accent="rose"
-                hint="Requieren revisión"
-              />
-            </div>
+            <StatsSection stats={stats} />
           </section>
 
-          {/* ACCIONES RÁPIDAS */}
-          <section className="grid gap-3 md:grid-cols-3">
-            <QuickActionCard
-              title="Registrar nuevo activo"
-              description="En una versión completa podrías crear y dar de alta nuevos equipos."
-              icon={Plus}
-              onClick={handleNewAssetClick}
-            />
-            <QuickActionCard
-              title="Ver inventario"
-              description="Ir directamente a la tabla de activos registrados."
-              icon={ClipboardList}
-              onClick={scrollToInventory}
-            />
-            <QuickActionCard
-              title="Escanear activo (demo)"
-              description="Simulación de acceso al módulo de escaneo con cámara y códigos."
-              icon={Scan}
-              onClick={handleScanClick}
-            />
+          <QuickActionsSection
+            isAdmin={isAdmin()}
+            onNewAsset={handleNewAssetClick}
+            onViewInventory={scrollToInventory}
+            onScan={handleScanClick}
+          />
+
+          <InventorySection
+            inventoryRef={inventoryRef}
+            isAdmin={isAdmin()}
+            search={search}
+            setSearch={setSearch}
+            statusFilter={statusFilter}
+            onStatusFilterChange={handleStatusFilterChange}
+            filteredAssets={filteredAssets}
+            loading={loading}
+            onEditAsset={handleEditAsset}
+            onDeleteAsset={handleDeleteAsset}
+            onExportCSV={handleExportCSV}
+          />
+
+          {/* GRÁFICAS */}
+          <section className="grid gap-4 md:grid-cols-2">
+            <Suspense
+              fallback={
+                <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+                  <div className="text-center">
+                    <div className="relative w-12 h-12 mx-auto mb-3">
+                      <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" />
+                      <div className="absolute inset-0 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin" />
+                    </div>
+                    <p className="text-sm text-slate-400">Cargando gráfica...</p>
+                  </div>
+                </div>
+              }
+            >
+              <AssetsByCategoryChart assets={allAssets} />
+            </Suspense>
+            <Suspense
+              fallback={
+                <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+                  <div className="text-center">
+                    <div className="relative w-12 h-12 mx-auto mb-3">
+                      <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" />
+                      <div className="absolute inset-0 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin" />
+                    </div>
+                    <p className="text-sm text-slate-400">Cargando gráfica...</p>
+                  </div>
+                </div>
+              }
+            >
+              <AssetsStatusChart assets={allAssets} />
+            </Suspense>
           </section>
 
-          {/* Panel principal: filtros + tabla */}
-          <section
-            ref={inventoryRef}
-            className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-2xl shadow-black/40 space-y-4"
-          >
-            {/* Filtros */}
-            <div className="flex flex-col md:flex-row md:items-center gap-3 md:gap-4 justify-between">
-              <div>
-                <h2 className="text-sm font-semibold text-slate-100">
-                  Inventario de activos
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Vista de solo lectura desde la vista{" "}
-                  <code className="px-1.5 py-0.5 rounded bg-slate-800/80 border border-slate-700 text-[11px] font-mono">
-                    assets_public
-                  </code>
-                  .
-                </p>
-              </div>
-
-              <div className="flex flex-col md:flex-row gap-2 md:items-center">
-                <div className="relative">
-                  <input
-                    type="text"
-                    placeholder="Buscar por nombre, código o ubicación..."
-                    className="w-full md:w-64 bg-slate-950/60 border border-slate-700 rounded-full px-9 py-1.5 text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                  />
-                  <span className="absolute left-3 top-1.5 text-slate-500 text-xs">
-                    🔍
-                  </span>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5">
-                  {STATUS_OPTIONS.map((opt) => (
-                    <button
-                      key={opt.value}
-                      type="button"
-                      onClick={() => handleStatusFilterChange(opt.value)}
-                      className={`px-3 py-1 rounded-full text-[11px] border transition
-                        ${
-                          statusFilter === opt.value
-                            ? "bg-emerald-500 text-slate-950 border-emerald-400 shadow shadow-emerald-500/40"
-                            : "bg-slate-950/40 text-slate-300 border-slate-700 hover:border-slate-500"
-                        }`}
-                    >
-                      {opt.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Tabla */}
-            {loading ? (
-              <div className="py-10 text-center text-slate-400 text-sm">
-                Cargando inventario demo...
-              </div>
-            ) : filteredAssets.length === 0 ? (
-              <div className="py-10 text-center text-slate-500 text-sm">
-                No hay activos que coincidan con los filtros actuales.
-              </div>
-            ) : (
-              <div className="rounded-xl border-[2px] border-slate-700/60 overflow-hidden bg-slate-950/40">
-                <div className="overflow-x-auto">
-                  <table className="min-w-[640px] w-full text-xs md:text-sm">
-                    <thead className="bg-slate-900/90 border-b border-slate-800 text-[11px] uppercase text-slate-400">
-                      <tr>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Código
-                        </th>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Nombre
-                        </th>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Categoría
-                        </th>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Estado
-                        </th>
-                        <th className="px-3 py-2 text-left font-medium">
-                          Ubicación
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredAssets.map((asset, idx) => (
-                        <tr
-                          key={asset.id}
-                          className={`border-b border-slate-800/80 last:border-0 hover:bg-slate-900/70 transition ${
-                            idx % 2 === 0 ? "bg-slate-950/10" : ""
-                          }`}
-                        >
-                          <td className="px-3 py-2 font-mono text-[11px] text-slate-400">
-                            {asset.code}
-                          </td>
-                          <td className="px-3 py-2">
-                            <div className="flex flex-col">
-                              <Link
-                                to={`/activo/${asset.id}`}
-                                className="font-medium text-slate-50 hover:underline decoration-emerald-400"
-                              >
-                                {asset.name}
-                              </Link>
-                              {asset.description && (
-                                <span className="text-[11px] text-slate-400 line-clamp-1">
-                                  {asset.description}
-                                </span>
-                              )}
-                            </div>
-                          </td>
-                          <td className="px-3 py-2 text-slate-200">
-                            {asset.category || "—"}
-                          </td>
-                          <td className="px-3 py-2">
-                            <AssetStatusBadge status={asset.status} />
-                          </td>
-                          <td className="px-3 py-2 text-slate-200">
-                            {asset.location || "—"}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            <p className="text-xs text-slate-400">
-              * Esta demo está pensada para mostrar diseño de dashboards y
-              conexión con una base de datos real. En una versión completa se
-              añadirían roles, edición de activos, escáner QR, etc.
-            </p>
-          </section>
-
-          {/* GRÁFICA */}
+          {/* Gráfica de ubicaciones */}
           <section>
-            <AssetsByCategoryChart assets={assets} />
+            <Suspense
+              fallback={
+                <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+                  <div className="text-center">
+                    <div className="relative w-12 h-12 mx-auto mb-3">
+                      <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" />
+                      <div className="absolute inset-0 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin" />
+                    </div>
+                    <p className="text-sm text-slate-400">Cargando gráfica...</p>
+                  </div>
+                </div>
+              }
+            >
+              <AssetsLocationChart assets={allAssets} />
+            </Suspense>
           </section>
 
           {/* ACERCA DE ESTA DEMO / STACK TÉCNICO */}
@@ -515,94 +413,33 @@ function App() {
           </section>
         </main>
       </div>
+
+      {/* Modales */}
+      <AssetForm
+        asset={editingAsset}
+        onSave={handleSaveAsset}
+        onClose={() => {
+          setFormOpen(false);
+          setEditingAsset(null);
+        }}
+        isOpen={formOpen}
+      />
+
+      <DeleteConfirm
+        asset={deleteConfirm}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteConfirm(null)}
+        isOpen={!!deleteConfirm}
+      />
+
+      <CommandPalette
+        isOpen={commandOpen}
+        onClose={handleCloseCommand}
+        assets={allAssets}
+        onSelectAsset={handleSelectAssetFromCommand}
+        onGoToInventory={scrollToInventory}
+      />
     </div>
-  );
-}
-
-function SidebarSection({ title, children }) {
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <p className="text-[11px] uppercase tracking-wide text-slate-500">
-          {title}
-        </p>
-        <span className="h-px flex-1 ml-2 bg-gradient-to-r from-emerald-500/60 via-sky-500/40 to-transparent" />
-      </div>
-      <div className="space-y-1.5">{children}</div>
-    </div>
-  );
-}
-
-function SidebarItem({ label, icon, active }) {
-  return (
-    <button
-      type="button"
-      className={`
-        w-full flex items-center gap-3 px-4 py-2.5
-        rounded-full text-left text-sm transition
-        border
-        ${
-          active
-            ? "bg-slate-900/90 border-emerald-400 text-emerald-100 shadow-[0_0_12px_rgba(16,185,129,0.35)]"
-            : "bg-slate-950/40 border-slate-800 text-slate-300 hover:border-emerald-400/70 hover:bg-slate-900/80 hover:text-slate-50"
-        }
-      `}
-    >
-      <span className="text-base">{icon}</span>
-      <span className="font-medium">{label}</span>
-    </button>
-  );
-}
-
-function StatCard({ label, value, hint, accent }) {
-  const accentClasses =
-    accent === "emerald"
-      ? "from-emerald-400/30 to-teal-500/20 text-emerald-200"
-      : accent === "amber"
-      ? "from-amber-400/30 to-orange-500/20 text-amber-200"
-      : accent === "rose"
-      ? "from-rose-400/30 to-fuchsia-500/20 text-rose-200"
-      : "from-slate-400/25 to-slate-500/15 text-slate-200";
-
-  return (
-    <div className="bg-slate-900/70 border-[3px] border-slate-700/60 rounded-2xl p-3.5 flex flex-col justify-between shadow-lg shadow-black/40">
-      <p className="text-[11px] font-medium text-slate-400 uppercase mb-1">
-        {label}
-      </p>
-      <p
-        className={`text-xl font-semibold bg-gradient-to-r ${accentClasses} bg-clip-text`}
-      >
-        {value}
-      </p>
-      {hint && (
-        <p className="mt-1 text-[10px] text-slate-500 leading-snug">{hint}</p>
-      )}
-    </div>
-  );
-}
-
-function QuickActionCard({ title, description, icon: Icon, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="group text-left bg-slate-900/80 border-[2px] border-slate-700/60 rounded-2xl p-4 flex gap-3 items-start hover:border-emerald-400/80 hover:bg-slate-900 shadow-lg shadow-black/30 hover:shadow-emerald-500/20 transition"
-    >
-      {Icon && (
-        <div className="mt-0.5 h-8 w-8 rounded-xl bg-slate-950/80 border border-slate-700 flex items-center justify-center">
-          <Icon className="w-4 h-4 text-slate-300 group-hover:text-emerald-300 transition-colors" />
-        </div>
-      )}
-
-      <div className="flex-1">
-        <p className="text-sm font-semibold text-slate-100 group-hover:text-emerald-200">
-          {title}
-        </p>
-        <p className="mt-1 text-[11px] text-slate-500 leading-snug">
-          {description}
-        </p>
-      </div>
-    </button>
   );
 }
 
