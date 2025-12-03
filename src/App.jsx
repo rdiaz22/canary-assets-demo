@@ -239,7 +239,11 @@ function App() {
     return { total, disponibles, prestados, averiados };
   }, [allAssets]);
 
-  const handleExportCSV = useCallback(() => {
+  const handleExportExcel = useCallback(async () => {
+    // Lazy load de xlsx solo cuando se necesita exportar (reduce bundle inicial)
+    const XLSX = await import("xlsx");
+    
+    // Preparar datos con headers en español
     const headers = ["Código", "Nombre", "Categoría", "Estado", "Ubicación", "Descripción"];
     const rows = filteredAssets.map((asset) => [
       asset.code || "",
@@ -250,20 +254,26 @@ function App() {
       asset.description || "",
     ]);
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")),
-    ].join("\n");
+    // Crear workbook y worksheet
+    const wb = XLSX.utils.book_new();
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", `inventario_${new Date().toISOString().split("T")[0]}.csv`);
-    link.style.visibility = "hidden";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    // Ajustar ancho de columnas automáticamente
+    const colWidths = headers.map((header, colIndex) => {
+      const maxLength = Math.max(
+        header.length,
+        ...rows.map((row) => String(row[colIndex] || "").length)
+      );
+      return { wch: Math.min(Math.max(maxLength + 2, 10), 50) }; // Mínimo 10, máximo 50 caracteres
+    });
+    ws["!cols"] = colWidths;
+
+    // Agregar worksheet al workbook
+    XLSX.utils.book_append_sheet(wb, ws, "Inventario");
+
+    // Generar archivo y descargar
+    const fileName = `inventario_${new Date().toISOString().split("T")[0]}.xlsx`;
+    XLSX.writeFile(wb, fileName);
   }, [filteredAssets]);
 
   return (
@@ -329,7 +339,7 @@ function App() {
             loading={loading}
             onEditAsset={handleEditAsset}
             onDeleteAsset={handleDeleteAsset}
-            onExportCSV={handleExportCSV}
+            onExportExcel={handleExportExcel}
           />
 
           {/* GRÁFICAS */}

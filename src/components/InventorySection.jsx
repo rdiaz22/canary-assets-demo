@@ -19,7 +19,7 @@ export default function InventorySection({
   loading,
   onEditAsset,
   onDeleteAsset,
-  onExportCSV,
+  onExportExcel,
   localAssetsCount = 0,
 }) {
   return (
@@ -81,12 +81,12 @@ export default function InventorySection({
             ))}
             {filteredAssets.length > 0 && (
               <button
-                onClick={onExportCSV}
+                onClick={onExportExcel}
                 className="px-3 py-1 rounded-full text-[11px] border border-slate-700 bg-slate-950/40 text-slate-300 hover:border-emerald-400 hover:text-emerald-200 transition flex items-center gap-1.5"
-                title="Exportar a CSV"
+                title="Exportar a Excel"
               >
                 <Download className="w-3.5 h-3.5" />
-                CSV
+                Excel
               </button>
             )}
           </div>
