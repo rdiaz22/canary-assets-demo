@@ -13,8 +13,8 @@ const AssetDetailPage = lazy(() => import("./pages/AssetDetailPage.jsx"));
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <AuthProvider>
-      <BrowserRouter>
-        <Routes>
+    <BrowserRouter>
+      <Routes>
           <Route
             path="/"
             element={
@@ -33,8 +33,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               </ProtectedRoute>
             }
           />
-        </Routes>
-      </BrowserRouter>
+      </Routes>
+    </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>
 );

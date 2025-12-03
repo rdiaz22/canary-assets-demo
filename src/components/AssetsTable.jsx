@@ -42,7 +42,10 @@ export default function AssetsTable({
             </tr>
           </thead>
           <tbody>
-            {assets.map((asset, idx) => (
+            {assets.map((asset, idx) => {
+              const isLocal = String(asset.id).startsWith("local-");
+
+              return (
               <tr
                 key={asset.id}
                 className={`border-b border-slate-800/80 last:border-0 hover:bg-slate-900/70 transition ${
@@ -54,12 +57,24 @@ export default function AssetsTable({
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex flex-col">
-                    <Link
-                      to={`/activo/${asset.id}`}
-                      className="font-medium text-slate-50 hover:underline decoration-emerald-400"
-                    >
-                      {asset.name}
-                    </Link>
+                    {isLocal ? (
+                      <>
+                        <span className="font-medium text-slate-100">
+                          {asset.name}
+                        </span>
+                        <span className="inline-flex items-center gap-1 mt-1 text-[10px] text-emerald-300">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          Solo demo (sin detalle)
+                        </span>
+                      </>
+                    ) : (
+                      <Link
+                        to={`/activo/${asset.id}`}
+                        className="font-medium text-slate-50 hover:underline decoration-emerald-400"
+                      >
+                        {asset.name}
+                      </Link>
+                    )}
                     {asset.description && (
                       <span className="text-[11px] text-slate-400 line-clamp-1">
                         {asset.description}
@@ -79,7 +94,7 @@ export default function AssetsTable({
                 {isAdmin && (
                   <td className="px-3 py-2">
                     <div className="flex items-center gap-2">
-                      {asset.id?.startsWith("local-") ? (
+                      {isLocal ? (
                         <>
                           <button
                             onClick={() => onEdit(asset)}
@@ -105,7 +120,7 @@ export default function AssetsTable({
                   </td>
                 )}
               </tr>
-            ))}
+            )})}
           </tbody>
         </table>
       </div>

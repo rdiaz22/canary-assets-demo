@@ -35,7 +35,7 @@ function App() {
   const scrollToInventory = useCallback(() => {
     // Usar requestAnimationFrame para deferir el scroll y no bloquear la UI
     requestAnimationFrame(() => {
-      if (inventoryRef.current) {
+    if (inventoryRef.current) {
         inventoryRef.current.scrollIntoView({
           behavior: "smooth",
           block: "start",
@@ -82,6 +82,29 @@ function App() {
     }
   }, [deleteConfirm]);
 
+  // Persistir activos locales en localStorage para que no se pierdan al volver
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("canary_assets_local");
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setLocalAssets(parsed);
+        }
+      }
+    } catch (e) {
+      console.error("Error leyendo activos locales desde localStorage", e);
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("canary_assets_local", JSON.stringify(localAssets));
+    } catch (e) {
+      console.error("Error guardando activos locales en localStorage", e);
+    }
+  }, [localAssets]);
+
   const handleScanClick = useCallback(() => {
     setTimeout(() => {
       alert(
@@ -122,7 +145,7 @@ function App() {
     },
     [navigate, scrollToInventory]
   );
-
+  
   useEffect(() => {
     const loadAssets = async () => {
       setLoading(true);
@@ -333,7 +356,7 @@ function App() {
                     </div>
                     <p className="text-sm text-slate-400">Cargando gráfica...</p>
                   </div>
-                </div>
+            </div>
               }
             >
               <AssetsLocationChart assets={allAssets} />
@@ -347,7 +370,7 @@ function App() {
               <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
                 <Code2 className="w-4 h-4 text-emerald-300" />
                 Acerca de esta demo
-              </h2>
+                </h2>
               <p className="text-sm text-slate-300 leading-relaxed">
                 <span className="font-semibold text-slate-50">
                   Canary Assets
