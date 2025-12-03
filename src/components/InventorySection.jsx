@@ -20,6 +20,7 @@ export default function InventorySection({
   onEditAsset,
   onDeleteAsset,
   onExportCSV,
+  localAssetsCount = 0,
 }) {
   return (
     <section
@@ -42,6 +43,11 @@ export default function InventorySection({
               </code>
             )}
             .
+            {isAdmin && localAssetsCount > 0 && (
+              <span className="ml-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-300 border border-amber-400/30 text-[10px]">
+                {localAssetsCount} temporal{localAssetsCount !== 1 ? "es" : ""}
+              </span>
+            )}
           </p>
         </div>
 

@@ -17,6 +17,9 @@ const AssetsByCategoryChart = lazy(() => import("./components/AssetsByCategoryCh
 const AssetsStatusChart = lazy(() => import("./components/AssetsStatusChart.jsx"));
 const AssetsLocationChart = lazy(() => import("./components/AssetsLocationChart.jsx"));
 
+// Límite de activos temporales para evitar problemas de rendimiento
+const MAX_LOCAL_ASSETS = 5;
+
 function App() {
   const { logout, isAdmin } = useAuth();
   const navigate = useNavigate();
@@ -46,9 +49,17 @@ function App() {
 
   // Handlers optimizados que no bloquean la UI
   const handleNewAssetClick = useCallback(() => {
+    if (localAssets.length >= MAX_LOCAL_ASSETS) {
+      setTimeout(() => {
+        alert(
+          `Límite alcanzado: Solo puedes crear hasta ${MAX_LOCAL_ASSETS} activos temporales en esta demo. Elimina algunos para crear nuevos.`
+        );
+      }, 0);
+      return;
+    }
     setEditingAsset(null);
     setFormOpen(true);
-  }, []);
+  }, [localAssets.length]);
 
   const handleEditAsset = useCallback((asset) => {
     setEditingAsset(asset);
@@ -66,12 +77,20 @@ function App() {
         prev.map((a) => (a.id === assetData.id ? assetData : a))
       );
     } else {
-      // Crear nuevo activo
+      // Crear nuevo activo (validar límite)
+      if (localAssets.length >= MAX_LOCAL_ASSETS) {
+        setTimeout(() => {
+          alert(
+            `Límite alcanzado: Solo puedes crear hasta ${MAX_LOCAL_ASSETS} activos temporales en esta demo. Elimina algunos para crear nuevos.`
+          );
+        }, 0);
+        return;
+      }
       setLocalAssets((prev) => [...prev, assetData]);
     }
     setFormOpen(false);
     setEditingAsset(null);
-  }, [editingAsset]);
+  }, [editingAsset, localAssets.length]);
 
   const handleConfirmDelete = useCallback(() => {
     if (deleteConfirm) {
@@ -294,9 +313,12 @@ function App() {
             onNewAsset={handleNewAssetClick}
             onViewInventory={scrollToInventory}
             onScan={handleScanClick}
+            localAssetsCount={localAssets.length}
+            maxLocalAssets={MAX_LOCAL_ASSETS}
           />
 
           <InventorySection
+            localAssetsCount={localAssets.length}
             inventoryRef={inventoryRef}
             isAdmin={isAdmin()}
             search={search}

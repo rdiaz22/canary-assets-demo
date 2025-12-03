@@ -6,15 +6,24 @@ export default function QuickActionsSection({
   onNewAsset,
   onViewInventory,
   onScan,
+  localAssetsCount = 0,
+  maxLocalAssets = 5,
 }) {
+  const isLimitReached = localAssetsCount >= maxLocalAssets;
+  
   return (
     <section className="grid gap-3 md:grid-cols-3">
       {isAdmin && (
         <QuickActionCard
           title="Registrar nuevo activo"
-          description="En una versión completa podrías crear y dar de alta nuevos equipos."
+          description={
+            isLimitReached
+              ? `Límite alcanzado (${localAssetsCount}/${maxLocalAssets}). Elimina algunos activos temporales para crear nuevos.`
+              : `En una versión completa podrías crear y dar de alta nuevos equipos. (${localAssetsCount}/${maxLocalAssets} temporales)`
+          }
           icon={Plus}
           onClick={onNewAsset}
+          disabled={isLimitReached}
         />
       )}
       <QuickActionCard
