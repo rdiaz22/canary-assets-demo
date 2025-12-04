@@ -277,7 +277,7 @@ function App() {
   }, [filteredAssets]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-50 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-50 flex">
       <Sidebar onLogout={logout} />
 
       {/* CONTENIDO PRINCIPAL */}
@@ -294,22 +294,22 @@ function App() {
           {/* Bloque superior con descripción + métricas */}
           <section className="grid gap-4 md:grid-cols-[minmax(0,1.5fr)_minmax(0,2fr)]">
             {/* Intro */}
-            <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40">
-              <h2 className="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
-                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-800 border border-slate-700 text-[11px]">
+            <div className="bg-white/80 dark:bg-slate-900/80 border-[3px] border-slate-200 dark:border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-xl shadow-slate-200/50 dark:shadow-black/40">
+              <h2 className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 flex items-center gap-2">
+                <span className="inline-flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-[11px]">
                   i
                 </span>
                 Visión general
               </h2>
-              <p className="text-sm text-slate-300 leading-relaxed mb-3">
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed mb-3">
                 Este panel muestra una demo de un sistema de gestión de activos
                 informáticos. Los datos se almacenan en{" "}
-                <span className="font-semibold text-slate-100">Supabase</span> y
+                <span className="font-semibold text-slate-900 dark:text-slate-100">Supabase</span> y
                 se consultan en tiempo real desde un frontend construido con{" "}
-                <span className="font-semibold text-slate-100">React</span> y{" "}
-                <span className="font-semibold text-slate-100">Tailwind</span>.
+                <span className="font-semibold text-slate-900 dark:text-slate-100">React</span> y{" "}
+                <span className="font-semibold text-slate-900 dark:text-slate-100">Tailwind</span>.
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600 dark:text-slate-500">
                 Ideal para mostrar flujos de lectura, filtrado, visualización de
                 datos y diseño UI de dashboards modernos.
               </p>
@@ -346,13 +346,13 @@ function App() {
           <section className="grid gap-4 md:grid-cols-2">
             <Suspense
               fallback={
-                <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+                <div className="bg-white/80 dark:bg-slate-900/80 border-[3px] border-slate-200 dark:border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
                   <div className="text-center">
                     <div className="relative w-12 h-12 mx-auto mb-3">
                       <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" />
                       <div className="absolute inset-0 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin" />
                     </div>
-                    <p className="text-sm text-slate-400">Cargando gráfica...</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Cargando gráfica...</p>
                   </div>
                 </div>
               }
@@ -361,13 +361,13 @@ function App() {
             </Suspense>
             <Suspense
               fallback={
-                <div className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
+                <div className="bg-white/80 dark:bg-slate-900/80 border-[3px] border-slate-200 dark:border-slate-700/60 rounded-2xl p-8 flex items-center justify-center min-h-[300px]">
                   <div className="text-center">
                     <div className="relative w-12 h-12 mx-auto mb-3">
                       <div className="absolute inset-0 border-4 border-emerald-500/20 rounded-full" />
                       <div className="absolute inset-0 border-4 border-transparent border-t-emerald-500 rounded-full animate-spin" />
                     </div>
-                    <p className="text-sm text-slate-400">Cargando gráfica...</p>
+                    <p className="text-sm text-slate-600 dark:text-slate-400">Cargando gráfica...</p>
                   </div>
                 </div>
               }
@@ -396,15 +396,15 @@ function App() {
           </section>
 
           {/* ACERCA DE ESTA DEMO / STACK TÉCNICO */}
-          <section className="bg-slate-900/80 border-[3px] border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-xl shadow-black/40 grid gap-4 md:grid-cols-[2fr_1.2fr]">
+          <section className="bg-white/80 dark:bg-slate-900/80 border-[3px] border-slate-200 dark:border-slate-700/60 rounded-2xl p-4 md:p-5 shadow-xl shadow-slate-200/50 dark:shadow-black/40 grid gap-4 md:grid-cols-[2fr_1.2fr]">
             {/* Descripción */}
             <div className="space-y-3">
-              <h2 className="text-sm font-semibold text-slate-100 flex items-center gap-2">
-                <Code2 className="w-4 h-4 text-emerald-300" />
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                <Code2 className="w-4 h-4 text-emerald-600 dark:text-emerald-300" />
                 Acerca de esta demo
                 </h2>
-              <p className="text-sm text-slate-300 leading-relaxed">
-                <span className="font-semibold text-slate-50">
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
+                <span className="font-semibold text-slate-900 dark:text-slate-50">
                   Canary Assets
                 </span>{" "}
                 es una demo pública de un sistema de inventario de activos
@@ -412,7 +412,7 @@ function App() {
                 diseñar e implementar dashboards modernos conectados a una base
                 de datos en la nube.
               </p>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-600 dark:text-slate-500">
                 Esta versión es de solo lectura: los datos se cargan desde una
                 vista pública de Supabase y se presentan en diferentes
                 componentes visuales (métricas, tabla, gráficas, ficha de
@@ -422,43 +422,43 @@ function App() {
 
             {/* Stack / links */}
             <div className="space-y-3 text-sm">
-              <h3 className="text-xs font-semibold text-slate-200 uppercase tracking-wide">
+              <h3 className="text-xs font-semibold text-slate-800 dark:text-slate-200 uppercase tracking-wide">
                 Stack técnico
               </h3>
-              <ul className="space-y-1.5 text-[12px] text-slate-300">
+              <ul className="space-y-1.5 text-[12px] text-slate-700 dark:text-slate-300">
                 <li className="flex items-center gap-2">
-                  <Code2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <Code2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-300" />
                   <span>Frontend con React + Vite + Tailwind CSS.</span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Database className="w-3.5 h-3.5 text-emerald-300" />
+                  <Database className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-300" />
                   <span>
                     Datos en Supabase (vista pública{" "}
                     <code>assets_public</code>).
                   </span>
                 </li>
                 <li className="flex items-center gap-2">
-                  <Globe2 className="w-3.5 h-3.5 text-emerald-300" />
+                  <Globe2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-300" />
                   <span>Despliegue en Vercel como demo pública.</span>
                 </li>
               </ul>
 
-              <div className="pt-2 border-t border-slate-800 space-y-2">
-                <p className="text-[11px] text-slate-500">
+              <div className="pt-2 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                <p className="text-[11px] text-slate-600 dark:text-slate-500">
                   Este proyecto es un ejemplo que muestra como se puede conectar una base de datos en la nube a un frontend con React y Tailwind CSS.
                   (inventario de activos, reservas, etc.).
                 </p>
                 <div className="flex flex-wrap gap-2 text-[11px]">
                   <a
                     href="#"
-                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-slate-700 bg-slate-950/60 text-slate-200 hover:border-emerald-400 hover:text-emerald-200 transition"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-950/60 text-slate-700 dark:text-slate-200 hover:border-emerald-500 dark:hover:border-emerald-400 hover:text-emerald-600 dark:hover:text-emerald-200 transition"
                   >
                     <Github className="w-3.5 h-3.5" />
                     Ver código (GitHub)
                   </a>
-                  <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-slate-800 bg-slate-950/60 text-slate-400">
+                  <span className="inline-flex items-center px-2.5 py-1 rounded-full border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/60 text-slate-600 dark:text-slate-400">
                     Demo construida por{" "}
-                    <span className="font-medium text-slate-200 ml-1">
+                    <span className="font-medium text-slate-800 dark:text-slate-200 ml-1">
                       Richard Díaz
                     </span>
                   </span>

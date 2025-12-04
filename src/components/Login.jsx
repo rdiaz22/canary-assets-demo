@@ -25,28 +25,28 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Logo y título */}
         <div className="text-center mb-8">
           <div className="inline-flex h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-sky-500 items-center justify-center text-slate-950 font-bold text-2xl shadow-lg shadow-emerald-500/40 mb-4">
             CA
           </div>
-          <h1 className="text-2xl font-bold text-slate-50 mb-2">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-50 mb-2">
             Canary Assets
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-600 dark:text-slate-400">
             Sistema de gestión de inventario
           </p>
         </div>
 
         {/* Card de login */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl shadow-black/40">
+        <div className="bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 md:p-8 shadow-2xl shadow-slate-200/50 dark:shadow-black/40">
           <div className="mb-6">
-            <h2 className="text-lg font-semibold text-slate-100 mb-2">
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-2">
               Iniciar sesión
             </h2>
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Ingresa tus credenciales para acceder al sistema
             </p>
           </div>
@@ -54,17 +54,17 @@ export default function Login() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Usuario */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Usuario
               </label>
               <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 dark:text-slate-500" />
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin o lector"
-                  className="w-full bg-slate-950/60 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition"
                   required
                   autoComplete="username"
                 />
@@ -73,17 +73,17 @@ export default function Login() {
 
             {/* Contraseña */}
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
                 Contraseña
               </label>
               <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 dark:text-slate-500" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-slate-950/60 border border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition"
+                  className="w-full bg-slate-50 dark:bg-slate-950/60 border border-slate-300 dark:border-slate-700 rounded-lg pl-10 pr-4 py-2.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/60 focus:border-emerald-500/60 transition"
                   required
                   autoComplete="current-password"
                 />
@@ -119,15 +119,15 @@ export default function Login() {
           </form>
 
           {/* Credenciales demo */}
-          <div className="mt-6 pt-6 border-t border-slate-800">
-            <p className="text-xs text-slate-500 mb-3 text-center">
+          <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+            <p className="text-xs text-slate-600 dark:text-slate-500 mb-3 text-center">
               Credenciales de demostración:
             </p>
             <div className="space-y-2 text-xs">
-              <div className="flex items-center justify-between p-2 bg-slate-950/40 rounded border border-slate-800">
+              <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-950/40 rounded border border-slate-200 dark:border-slate-800">
                 <div>
-                  <span className="text-slate-300 font-medium">Admin:</span>
-                  <span className="text-slate-500 ml-2">admin / admin123</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">Admin:</span>
+                  <span className="text-slate-600 dark:text-slate-500 ml-2">admin / admin123</span>
                 </div>
                 <button
                   type="button"
@@ -135,15 +135,15 @@ export default function Login() {
                     setUsername("admin");
                     setPassword("admin123");
                   }}
-                  className="text-emerald-400 hover:text-emerald-300 text-[10px] font-medium"
+                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 text-[10px] font-medium"
                 >
                   Usar
                 </button>
               </div>
-              <div className="flex items-center justify-between p-2 bg-slate-950/40 rounded border border-slate-800">
+              <div className="flex items-center justify-between p-2 bg-slate-50 dark:bg-slate-950/40 rounded border border-slate-200 dark:border-slate-800">
                 <div>
-                  <span className="text-slate-300 font-medium">Lector:</span>
-                  <span className="text-slate-500 ml-2">lector / lector123</span>
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">Lector:</span>
+                  <span className="text-slate-600 dark:text-slate-500 ml-2">lector / lector123</span>
                 </div>
                 <button
                   type="button"
@@ -151,7 +151,7 @@ export default function Login() {
                     setUsername("lector");
                     setPassword("lector123");
                   }}
-                  className="text-emerald-400 hover:text-emerald-300 text-[10px] font-medium"
+                  className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 text-[10px] font-medium"
                 >
                   Usar
                 </button>
@@ -161,7 +161,7 @@ export default function Login() {
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-slate-500 mt-6">
+        <p className="text-center text-xs text-slate-600 dark:text-slate-500 mt-6">
           Esta es una demo pública · Solo lectura
         </p>
       </div>

@@ -82,11 +82,11 @@ export default function CommandPalette({
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/60 backdrop-blur-sm">
-      <div className="w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="w-full max-w-2xl bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
         {/* Header / input */}
-        <div className="border-b border-slate-800 bg-slate-950/80">
+        <div className="border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/80">
           <div className="flex items-center gap-2 px-4 py-3">
-            <Command className="w-4 h-4 text-emerald-400" />
+            <Command className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <input
               ref={inputRef}
               type="text"
@@ -94,14 +94,14 @@ export default function CommandPalette({
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="flex-1 bg-transparent border-0 text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none"
+              className="flex-1 bg-transparent border-0 text-sm text-slate-900 dark:text-slate-50 placeholder:text-slate-500 dark:placeholder:text-slate-500 focus:outline-none"
             />
-            <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-500">
-              <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900/80">
+            <div className="hidden sm:flex items-center gap-1 text-[10px] text-slate-600 dark:text-slate-500">
+              <span className="px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900/80">
                 Ctrl
               </span>
               <span>+</span>
-              <span className="px-1.5 py-0.5 rounded border border-slate-700 bg-slate-900/80">
+              <span className="px-1.5 py-0.5 rounded border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900/80">
                 K
               </span>
             </div>
@@ -112,7 +112,7 @@ export default function CommandPalette({
         <div className="max-h-96 overflow-y-auto">
           {/* Comandos rápidos */}
           <div className="px-4 pt-3 pb-2">
-            <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500 mb-2">
+            <p className="text-[10px] font-medium uppercase tracking-wide text-slate-600 dark:text-slate-500 mb-2">
               Comandos rápidos
             </p>
             <button
@@ -121,12 +121,12 @@ export default function CommandPalette({
                 onGoToInventory();
                 onClose();
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-xs bg-slate-900/80 border border-slate-800 hover:border-emerald-500/60 hover:bg-slate-900 transition"
+              className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left text-xs bg-slate-100 dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500/60 hover:bg-emerald-50 dark:hover:bg-slate-900 transition"
             >
-              <Search className="w-4 h-4 text-emerald-300" />
+              <Search className="w-4 h-4 text-emerald-600 dark:text-emerald-300" />
               <div className="flex-1">
-                <p className="text-slate-100">Ir al inventario</p>
-                <p className="text-[10px] text-slate-500">
+                <p className="text-slate-900 dark:text-slate-100">Ir al inventario</p>
+                <p className="text-[10px] text-slate-600 dark:text-slate-500">
                   Hace scroll hasta la tabla de activos
                 </p>
               </div>
@@ -136,17 +136,17 @@ export default function CommandPalette({
           {/* Resultados de activos */}
           <div className="px-4 pt-2 pb-3">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] font-medium uppercase tracking-wide text-slate-500">
+              <p className="text-[10px] font-medium uppercase tracking-wide text-slate-600 dark:text-slate-500">
                 Activos
               </p>
-              <span className="inline-flex items-center gap-1 text-[10px] text-slate-500">
+              <span className="inline-flex items-center gap-1 text-[10px] text-slate-600 dark:text-slate-500">
                 <ArrowUpDown className="w-3 h-3" />
                 Navega con ↑ ↓, Enter para abrir
               </span>
             </div>
 
             {filteredAssets.length === 0 ? (
-              <p className="text-xs text-slate-500 py-3">
+              <p className="text-xs text-slate-600 dark:text-slate-500 py-3">
                 No se encontraron activos para &quot;{query}&quot;.
               </p>
             ) : (
@@ -158,20 +158,20 @@ export default function CommandPalette({
                       onClick={() => onSelectAsset(asset)}
                       className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-xs border ${
                         index === activeIndex
-                          ? "bg-slate-800 border-emerald-500/60"
-                          : "bg-slate-900/40 border-slate-800 hover:border-emerald-500/40 hover:bg-slate-900/80"
+                          ? "bg-emerald-50 dark:bg-slate-800 border-emerald-500 dark:border-emerald-500/60"
+                          : "bg-slate-50 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800 hover:border-emerald-500 dark:hover:border-emerald-500/40 hover:bg-emerald-50/50 dark:hover:bg-slate-900/80"
                       }`}
                     >
                       <div className="flex flex-col flex-1 min-w-0">
                         <div className="flex items-center justify-between gap-2">
-                          <span className="font-medium text-slate-100 truncate">
+                          <span className="font-medium text-slate-900 dark:text-slate-100 truncate">
                             {asset.name}
                           </span>
-                          <span className="font-mono text-[10px] text-slate-400">
+                          <span className="font-mono text-[10px] text-slate-600 dark:text-slate-400">
                             {asset.code}
                           </span>
                         </div>
-                        <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-500">
+                        <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-600 dark:text-slate-500">
                           <span>{asset.category || "Sin categoría"}</span>
                           {asset.location && (
                             <>
@@ -184,7 +184,7 @@ export default function CommandPalette({
                         </div>
                       </div>
                       {String(asset.id).startsWith("local-") && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-400/40">
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-400/40">
                           Local
                         </span>
                       )}
