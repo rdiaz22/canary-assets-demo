@@ -7,6 +7,12 @@ const CATEGORIES = [
   "Tablet",
   "Impresora",
   "Router",
+  "Disco duro",
+  "Disco SSD",
+  "Memoria RAM",
+  "Tarjeta de red",
+  "Tarjeta de video",
+  "Tarjeta de audio",
   "Servidor",
   "Otro",
 ];
@@ -30,25 +36,17 @@ export default function AssetForm({ asset, onSave, onClose, isOpen }) {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    if (asset) {
-      setFormData({
-        name: asset.name || "",
-        code: asset.code || "",
-        category: asset.category || "",
-        status: asset.status || "disponible",
-        location: asset.location || "",
-        description: asset.description || "",
-      });
-    } else {
-      setFormData({
-        name: "",
-        code: "",
-        category: "",
-        status: "disponible",
-        location: "",
-        description: "",
-      });
-    }
+    // Inicializar el formulario cuando se abre o cambia el activo en edición
+    // eslint-disable-next-line
+    setFormData((prev) => ({
+      ...prev,
+      name: asset?.name || "",
+      code: asset?.code || "",
+      category: asset?.category || "",
+      status: asset?.status || "disponible",
+      location: asset?.location || "",
+      description: asset?.description || "",
+    }));
     setErrors({});
   }, [asset, isOpen]);
 

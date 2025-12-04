@@ -76,4 +76,60 @@ Se incluyen 7 activos reales con fotos:
 ```bash
 npm install
 npm run dev
+```
+
+La app estará disponible en `http://localhost:5173` (o el puerto que indique Vite).
+
+### Variables de entorno (Supabase)
+
+En la raíz del proyecto crea un archivo `.env` con:
+
+```bash
+VITE_SUPABASE_URL=tu_url_de_supabase
+VITE_SUPABASE_ANON_KEY=tu_anon_key_publica
+```
+
+> Usa **solo** la `anon key` pública de Supabase.  
+> Nunca subas claves privadas ni service roles al repositorio.
+
+---
+
+## 🔐 Seguridad y vistas públicas
+
+La app lee los datos desde la vista:
+
+- `public.assets_public` → Vista de solo lectura con `security_invoker = on`
+
+Esto significa:
+
+- Las políticas de seguridad (RLS) se evalúan con el usuario que hace la consulta.
+- La vista no usa `SECURITY DEFINER`, evitando saltarse RLS por error.
+
+---
+
+## 👤 Usuarios demo
+
+En el login puedes usar estas credenciales de ejemplo:
+
+- **Admin**: `admin / admin123`
+- **Lector**: `lector / lector123`
+
+> Ambos usuarios son puramente de demostración y no tienen relación con Supabase Auth.
+
+---
+
+## 📦 Scripts útiles
+
+- `npm run dev` → entorno de desarrollo
+- `npm run build` → build de producción
+- `npm run preview` → previsualizar el build
+- `npm run lint` → ejecutar ESLint
+
+---
+
+## 📄 Licencia
+
+Este proyecto está publicado bajo la licencia **MIT**.  
+Consulta el archivo `LICENSE` para más detalles.
+***
 
